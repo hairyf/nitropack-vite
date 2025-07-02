@@ -12,7 +12,10 @@
     "url": "git+https://github.com/hairy/nitropack-vite.git"
   },
   "bugs": "https://github.com/hairy/nitropack-vite/issues",
-  "keywords": [],
+  "keywords": [
+    "nitro",
+    "vite"
+  ],
   "sideEffects": false,
   "exports": {
     "./nitro": "./nitro.ts",

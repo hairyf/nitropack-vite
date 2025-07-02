@@ -14,17 +14,29 @@ NitroPack Vite is a Vite plugin that integrates NitroPack for server-side render
 pnpm add nitropack-vite -D
 ```
 
-## Configure
+## Usage
 
 - `vite.config.ts`
 
 ```ts
+import React from '@vitejs/plugin-react'
 import Nitro from 'nitropack-vite'
 import { defineConfig } from 'vite'
 
 export default defineConfig({
   plugins: [
-    Nitro()
+    React(),
+    // Nitro Options
+    Nitro({
+      // The source directory for the application.
+      // srcDir - default: './src'
+
+      // Additional automatic imports will take effect on the all page and server - https://github.com/unjs/unimport
+      // imports - default: null
+
+      // Is it compressed during construction
+      // minify - default: false
+    })
   ]
 })
 ```
@@ -32,11 +44,9 @@ export default defineConfig({
 - `nitro.config.ts`
 
 ```ts
+// your nitro config
 export default defineNitroConfig({
-  // NitroPack options
-  plugins: [
-    'node_modules/nitropack-vite/nitro.ts'
-  ]
+  // Do not use plugins with the same configuration here (srcDir, imports, minify)
 })
 ```
 
@@ -45,8 +55,8 @@ export default defineNitroConfig({
 ```json
 {
   "scripts": {
+    "dev": "vite dev",
     "build": "vite build",
-    "dev": "nitro dev",
     "prepare": "nitro prepare",
     "preview": "node .output/server/index.mjs"
   }

@@ -14,11 +14,11 @@
   "bugs": "https://github.com/hairy/nitropack-vite/issues",
   "keywords": [
     "nitro",
-    "vite"
+    "vite",
+    "unimport"
   ],
   "sideEffects": false,
   "exports": {
-    "./nitro": "./nitro.ts",
     ".": "./dist/index.mjs",
     "./plugin": "./dist/index.mjs",
     "./package.json": "./package.json"
@@ -27,8 +27,7 @@
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.mts",
   "files": [
-    "dist",
-    "nitro.ts"
+    "dist"
   ],
   "scripts": {
     "build": "unbuild",
@@ -42,9 +41,11 @@
     "prepare": "simple-git-hooks"
   },
   "dependencies": {
-    "glob": "catalog:",
+    "@hairy/utils": "catalog:",
+    "consola": "catalog:",
     "h3": "catalog:",
-    "nitropack": "catalog:"
+    "nitropack": "catalog:",
+    "unimport": "catalog:"
   },
   "devDependencies": {
     "@antfu/eslint-config": "catalog:cli",

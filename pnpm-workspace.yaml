@@ -4,9 +4,11 @@ packages:
   - packages/*
   - examples/*
 catalog:
-  glob: ^11.0.3
+  '@hairy/utils': ^1.33.0
+  consola: ^3.4.2
   h3: ^1.15.3
   nitropack: ^2.11.13
+  unimport: ^5.1.0
 catalogs:
   cli:
     '@antfu/eslint-config': ^4.10.1

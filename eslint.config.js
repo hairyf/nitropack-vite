@@ -6,4 +6,9 @@ export default antfu(
     type: 'lib',
     pnpm: true,
   },
+  {
+    rules: {
+      'ts/no-redeclare': 'off',
+    },
+  },
 )

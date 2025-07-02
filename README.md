@@ -14,7 +14,7 @@ NitroPack Vite is a Vite plugin that integrates NitroPack for server-side render
 pnpm add nitropack-vite -D
 ```
 
-## Usage
+## Configure
 
 - `vite.config.ts`
 
@@ -60,6 +60,61 @@ export default defineNitroConfig({
     "prepare": "nitro prepare",
     "preview": "node .output/server/index.mjs"
   }
+}
+```
+
+## Usage
+
+```sh
+pnpm run dev
+```
+
+print:
+
+```
+VITE v7.0.0  ready in 1275 ms
+
+➜  Local:   http://localhost:5173/
+➜  Network: use --host to expose
+➜  press h + enter to show help
+✔ Nitro Server built in 451ms
+Running DB migration task...
+```
+
+Add an API route, for example `src/routes/hello.ts`
+
+```ts
+export default defineEventHandler((event) => {
+  return 'Hello World'
+})
+```
+
+> nitropack-vite will automatically handle the relationship between routes and page routes without the need for additional configuration.
+
+Visit http://localhost:5173/hello, and you will see the response "Hello World".
+
+Use `$fetch` to make API requests on the page.
+
+```ts
+// main.ts
+// load default $fetch by ofetch
+import 'virtual:$fetch'
+
+// or you can custom $fetch
+import type { $Fetch } from 'nitropack'
+import { createFetch } from 'ofetch'
+globalThis.$fetch = createFetch({ baseURL: 'http://...' }) as $Fetch
+```
+
+```tsx
+// App.tsx
+function App() {
+  useEffect(() => {
+    $fetch('/hello').then((response) => {
+      console.log(response) // "Hello World"
+    })
+  }, [])
+  return null
 }
 ```
 

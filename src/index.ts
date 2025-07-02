@@ -1,4 +1,3 @@
-/* eslint-disable ts/ban-ts-comment */
 import type { PromiseType } from '@hairy/utils'
 import type { Nitro, NitroDevServer } from 'nitropack'
 import type { PresetNameInput } from 'nitropack/presets'
@@ -73,7 +72,6 @@ export default async function Nitro(options: NitroOptions = {}): Promise<PluginO
     nitro.hooks.hookOnce('restart', reloadNitro)
     server = createDevServer(nitro)
     handlers = await scanHandlers(nitro)
-
     await prepare(nitro)
     await build(nitro)
     return nitro
@@ -152,6 +150,14 @@ export default async function Nitro(options: NitroOptions = {}): Promise<PluginO
         await nitro.close()
         await fs.mkdir('.output/server/node_modules/vite/misc', { recursive: true })
         await fs.writeFile('.output/server/node_modules/vite/misc/true.js', 'export default true')
+      },
+      resolveId(source) {
+        if (source === 'virtual:$fetch')
+          return '\0virtual:$fetch'
+      },
+      load(id) {
+        if (id === '\0virtual:$fetch')
+          return `import { createFetch } from 'ofetch';window.$fetch = createFetch({})`
       },
     },
     options.imports && Unimport.vite(options.imports),

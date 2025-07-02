@@ -9,6 +9,8 @@ export default antfu(
   {
     rules: {
       'ts/no-redeclare': 'off',
+      'ts/ban-ts-comment': 'off',
+      'perfectionist/sort-imports': 'off',
     },
   },
 )

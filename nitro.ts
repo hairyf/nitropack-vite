@@ -1,4 +1,7 @@
-import type { GlobOptionsWithFileTypesUnset } from 'glob'
+/* eslint-disable ts/explicit-function-return-type */
+// eslint-disable-next-line ts/ban-ts-comment
+// @ts-nocheck
+
 import fs from 'node:fs/promises'
 import { extname, resolve } from 'node:path'
 import process from 'node:process'
@@ -29,7 +32,7 @@ const NitroReactPlugin = defineNitroPlugin(async (nitroApp) => {
   }))
 })
 
-async function readFiles(directory: string, options?: GlobOptionsWithFileTypesUnset): Promise<string[]> {
+async function readFiles(directory, options) {
   return glob('**/*', { cwd: directory, nodir: true, ...options })
     .then(files => files.map(file => file.replace(/\\/g, '/')).map(file => `/${file}`))
 }

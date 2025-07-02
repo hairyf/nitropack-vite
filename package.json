@@ -1,29 +1,31 @@
 {
-  "name": "pkg-placeholder",
+  "name": "nitropack-vite",
   "type": "module",
   "version": "0.0.0",
   "packageManager": "pnpm@10.6.2",
   "description": "_description_",
-  "author": "Anthony Fu <anthonyfu117@hotmail.com>",
+  "author": "Hairyf <wwu710632@gmail.com>",
   "license": "MIT",
-  "funding": "https://github.com/sponsors/antfu",
-  "homepage": "https://github.com/antfu/pkg-placeholder#readme",
+  "homepage": "https://github.com/hairy/nitropack-vite#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/antfu/pkg-placeholder.git"
+    "url": "git+https://github.com/hairy/nitropack-vite.git"
   },
-  "bugs": "https://github.com/antfu/pkg-placeholder/issues",
+  "bugs": "https://github.com/hairy/nitropack-vite/issues",
   "keywords": [],
   "sideEffects": false,
   "exports": {
+    "./nitro": "./nitro.ts",
     ".": "./dist/index.mjs",
+    "./plugin": "./dist/index.mjs",
     "./package.json": "./package.json"
   },
   "main": "./dist/index.mjs",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.mts",
   "files": [
-    "dist"
+    "dist",
+    "nitro.ts"
   ],
   "scripts": {
     "build": "unbuild",
@@ -35,6 +37,11 @@
     "test": "vitest",
     "typecheck": "tsc --noEmit",
     "prepare": "simple-git-hooks"
+  },
+  "dependencies": {
+    "glob": "catalog:",
+    "h3": "catalog:",
+    "nitropack": "catalog:"
   },
   "devDependencies": {
     "@antfu/eslint-config": "catalog:cli",

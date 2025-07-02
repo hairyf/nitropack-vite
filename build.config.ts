@@ -11,4 +11,5 @@ export default defineBuildConfig({
       '@antfu/utils',
     ],
   },
+  externals: ['vite'],
 })

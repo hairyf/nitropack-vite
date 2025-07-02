@@ -3,6 +3,10 @@ packages:
   - docs
   - packages/*
   - examples/*
+catalog:
+  glob: ^11.0.3
+  h3: ^1.15.3
+  nitropack: ^2.11.13
 catalogs:
   cli:
     '@antfu/eslint-config': ^4.10.1

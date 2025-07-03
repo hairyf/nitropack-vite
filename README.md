@@ -2,10 +2,21 @@
 
 [![npm version][npm-version-src]][npm-version-href]
 [![npm downloads][npm-downloads-src]][npm-downloads-href]
+[![bundle][bundle-src]][bundle-href]
 [![JSDocs][jsdocs-src]][jsdocs-href]
 [![License][license-src]][license-href]
 
-NitroPack Vite is a Vite plugin that integrates NitroPack for server-side rendering and static site generation.
+A Vite plugin that seamlessly integrates Nitro for server-side rendering, API routes, and full-stack development in a single unified framework.
+
+## Features
+
+- 🚀 **Zero Configuration** - No configuration required to integrate [Vite](https://github.com/vitejs/vite) and [Nitro](https://github.com/unjs/nitro)
+- 🔄 **Hot Module Replacement** - Fast development with HMR for both client and server
+- 🛠️ **API Routes** - Create server endpoints with Nitro's powerful event handlers
+- 📄 **Unstorage** - [Nitro KV storage](https://nitro.build/guide/storage) adapts to various storage scenarios
+- 🌐 **Universal Fetch** - Use `$fetch` on both client and server
+- 🔌 **Plugin System** - Extend functionality with [Vite](https://github.com/vitejs/vite) and [Nitro](https://github.com/unjs/nitro) plugins
+- 📦 **Production Ready** - Suitable for any supplier, such as [Vercel](https://vercel.com), [Netlify](https://www.netlify.com), [Cloudflare Workers](https://workers.cloudflare.com), and more
 
 ## Install
 
@@ -30,7 +41,8 @@ export default defineConfig({
       // The source directory for the application.
       // srcDir - default: './src'
 
-      // Additional automatic imports will take effect on the all page and server - https://github.com/unjs/unimport
+      // Additional automatic imports will take effect on the all page and server
+      // see - https://github.com/unjs/unimport
       // imports - default: null
 
       // Is it compressed during construction
@@ -46,6 +58,7 @@ export default defineConfig({
 // your nitro config
 export default defineNitroConfig({
   // Do not use plugins with the same configuration here (srcDir, imports, minify)
+  // Additional Nitro-specific configuration can be added here
 })
 ```
 
@@ -105,13 +118,29 @@ function App() {
 }
 ```
 
-And you can custom $fetch instance:
+And you can customize the $fetch instance:
 
 ```ts
-// or you can custom $fetch
+// Customize $fetch with additional options
 import type { $Fetch } from 'nitropack'
 import { createFetch } from 'ofetch'
-globalThis.$fetch = createFetch({ baseURL: 'http://...' }) as $Fetch
+globalThis.$fetch = createFetch({
+  baseURL: 'http://...',
+  headers: { 'x-custom-header': 'value' },
+  retry: 3
+}) as $Fetch
+```
+
+## Deployment
+
+The built application can be deployed to various platforms:
+
+```bash
+# Build for production
+pnpm build
+
+# Preview the production build
+pnpm preview
 ```
 
 ## License

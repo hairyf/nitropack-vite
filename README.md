@@ -147,20 +147,17 @@ pnpm preview
 
 ## Vercel
 
-You need to edit vercel.json
+You need to edit vercel.json and select nitro when selecting project deployment
 
 ```json
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "framework": "nitro",
   "installCommand": "pnpm install",
   "buildCommand": "pnpm build",
-  "devCommand": "pnpm dev",
-  "outputDirectory": ".output"
+  "outputDirectory": ".output",
+  "devCommand": "pnpm dev"
 }
 ```
-
-And [import your project](https://vercel.com/new) into Vercel.
 
 ## License
 

@@ -126,7 +126,7 @@ export default async function Nitro(options: NitroOptions = {}): Promise<PluginO
           : [config.server.watch.ignored, /\.nitro\/types\/tsconfig.json/].filter(Boolean)
 
         config.build ??= {}
-        config.build.outDir = './.nitro/static'
+        config.build.outDir = `${process.cwd()}/.nitro/static`
       },
       async configResolved() {
         nitro = process.env.NODE_ENV === 'development'

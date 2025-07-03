@@ -2,7 +2,6 @@
 
 [![npm version][npm-version-src]][npm-version-href]
 [![npm downloads][npm-downloads-src]][npm-downloads-href]
-[![bundle][bundle-src]][bundle-href]
 [![JSDocs][jsdocs-src]][jsdocs-href]
 [![License][license-src]][license-href]
 
@@ -78,7 +77,6 @@ VITE v7.0.0  ready in 1275 ms
 ➜  Network: use --host to expose
 ➜  press h + enter to show help
 ✔ Nitro Server built in 451ms
-Running DB migration task...
 ```
 
 Add an API route, for example `src/routes/hello.ts`
@@ -95,17 +93,6 @@ Visit http://localhost:5173/hello, and you will see the response "Hello World".
 
 Use `$fetch` to make API requests on the page.
 
-```ts
-// main.ts
-// load default $fetch by ofetch
-import 'virtual:$fetch'
-
-// or you can custom $fetch
-import type { $Fetch } from 'nitropack'
-import { createFetch } from 'ofetch'
-globalThis.$fetch = createFetch({ baseURL: 'http://...' }) as $Fetch
-```
-
 ```tsx
 // App.tsx
 function App() {
@@ -116,6 +103,15 @@ function App() {
   }, [])
   return null
 }
+```
+
+And you can custom $fetch instance:
+
+```ts
+// or you can custom $fetch
+import type { $Fetch } from 'nitropack'
+import { createFetch } from 'ofetch'
+globalThis.$fetch = createFetch({ baseURL: 'http://...' }) as $Fetch
 ```
 
 ## License

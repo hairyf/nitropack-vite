@@ -10,6 +10,7 @@ import { consola } from 'consola'
 import { toNodeListener } from 'h3'
 import { build, copyPublicAssets, createDevServer, createNitro as createNitroInstance, prepare, prerender, scanHandlers } from 'nitropack'
 import Unimport from 'unimport/unplugin'
+import { getMagicString } from 'unimport'
 
 export interface NitroOptions {
   /**
@@ -98,6 +99,7 @@ export default async function Nitro(options: NitroOptions = {}): Promise<PluginO
     )
     return nitro
   }
+  let loadedFetchID: string | undefined
 
   const plugins: PluginOption[] = [
     {
@@ -158,6 +160,23 @@ export default async function Nitro(options: NitroOptions = {}): Promise<PluginO
       load(id) {
         if (id === '\0virtual:$fetch')
           return `import { createFetch } from 'ofetch';window.$fetch = createFetch({})`
+      },
+      transform(code, id) {
+        if (id.includes('.html') || id.includes('.vite/deps'))
+          return
+
+        if (loadedFetchID && loadedFetchID !== id)
+          return
+
+        // main entry
+        loadedFetchID = id
+
+        const s = getMagicString(code)
+        s.prepend(`import 'virtual:$fetch';\n`)
+        return {
+          code: s.toString(),
+          map: s.generateMap({ hires: true }),
+        }
       },
     },
     options.imports && Unimport.vite(options.imports),

@@ -145,6 +145,23 @@ pnpm build
 pnpm preview
 ```
 
+## Vercel
+
+You need to edit vercel.json
+
+```json
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": "nitro",
+  "installCommand": "pnpm install",
+  "buildCommand": "pnpm build",
+  "devCommand": "pnpm dev",
+  "outputDirectory": ".output"
+}
+```
+
+And [import your project](https://vercel.com/new) into Vercel.
+
 ## License
 
 [MIT](./LICENSE) License © [Hairyf](https://github.com/haityf)

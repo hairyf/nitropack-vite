@@ -23,6 +23,7 @@ A Vite plugin that seamlessly integrates Nitro for server-side rendering, API ro
 
 ```bash
 pnpm add nitropack-vite -D
+pnpm add ofetch -S
 ```
 
 ## Configure

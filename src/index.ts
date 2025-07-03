@@ -8,6 +8,7 @@ import process from 'node:process'
 import { isArray } from '@hairy/utils'
 import { consola } from 'consola'
 import { toNodeListener } from 'h3'
+import type { NodeListener } from 'h3'
 import { build, copyPublicAssets, createDevServer, createNitro as createNitroInstance, prepare, prerender, scanHandlers } from 'nitropack'
 import Unimport from 'unimport/unplugin'
 import { getMagicString } from 'unimport'
@@ -35,7 +36,9 @@ export interface NitroOptions {
 const hmrKeyRep = /^runtimeConfig\.|routeRules\./
 
 export default async function Nitro(options: NitroOptions = {}): Promise<PluginOption[]> {
+  let loadedFetchID: string | undefined
   let handlers: PromiseType<ReturnType<typeof scanHandlers>> = []
+  let listener: NodeListener | undefined
   let server: NitroDevServer | undefined
   let nitro: Nitro
 
@@ -73,6 +76,7 @@ export default async function Nitro(options: NitroOptions = {}): Promise<PluginO
     nitro.hooks.hookOnce('restart', reloadNitro)
     server = createDevServer(nitro)
     handlers = await scanHandlers(nitro)
+    listener = toNodeListener(server.app)
     await prepare(nitro)
     await build(nitro)
     return nitro
@@ -99,7 +103,16 @@ export default async function Nitro(options: NitroOptions = {}): Promise<PluginO
     )
     return nitro
   }
-  let loadedFetchID: string | undefined
+
+  function filter(url: string): boolean {
+    return handlers.map(h => h.route).some((route) => {
+      if (!route.includes(':'))
+        return url.startsWith(route)
+      const routePattern = route.replace(/:[^/]+/g, '[^/]+')
+      const regex = new RegExp(`^${routePattern}(?:/.*)?$`)
+      return regex.test(url)
+    })
+  }
 
   const plugins: PluginOption[] = [
     {
@@ -122,26 +135,7 @@ export default async function Nitro(options: NitroOptions = {}): Promise<PluginO
       },
       async configureServer(viteServer) {
         viteServer.middlewares.use(async (req, res, next) => {
-          const url = req.originalUrl || req.url || ''
-          const listener = server ? toNodeListener(server.app) : undefined
-
-          const isNitroRoute = handlers.map(h => h.route).some((route) => {
-            if (route.includes(':')) {
-              const routePattern = route.replace(/:[^/]+/g, '[^/]+')
-              const regex = new RegExp(`^${routePattern}(?:/.*)?$`)
-              return regex.test(url)
-            }
-            else {
-              return url.startsWith(route)
-            }
-          })
-
-          if (isNitroRoute) {
-            listener?.(req, res)
-            return
-          }
-
-          next()
+          filter(req.originalUrl || req.url || '') ? listener?.(req, res) : next()
         })
       },
       async buildEnd() {
@@ -159,7 +153,7 @@ export default async function Nitro(options: NitroOptions = {}): Promise<PluginO
       },
       load(id) {
         if (id === '\0virtual:$fetch')
-          return `import { createFetch } from 'ofetch';window.$fetch = createFetch({})`
+          return `import { createFetch } from 'ofetch';globalThis.$fetch = createFetch({})`
       },
       transform(code, id) {
         if (id.includes('.html') || id.includes('.vite/deps'))

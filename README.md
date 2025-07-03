@@ -14,6 +14,7 @@ A Vite plugin that seamlessly integrates Nitro for server-side rendering, API ro
 - 🔄 **Hot Module Replacement** - Fast development with HMR for both client and server
 - 🛠️ **API Routes** - Create server endpoints with Nitro's powerful event handlers
 - 📄 **Unstorage** - [Nitro KV storage](https://nitro.build/guide/storage) adapts to various storage scenarios
+- 🔍️ **Unimport** - Default support for [Unimport](https://github.com/unjs/unimport), applied to both client and server simultaneously
 - 🌐 **Universal Fetch** - Use `$fetch` on both client and server
 - 🔌 **Plugin System** - Extend functionality with [Vite](https://github.com/vitejs/vite) and [Nitro](https://github.com/unjs/nitro) plugins
 - 📦 **Production Ready** - Suitable for any supplier, such as [Vercel](https://vercel.com), [Netlify](https://www.netlify.com), [Cloudflare Workers](https://workers.cloudflare.com), and more

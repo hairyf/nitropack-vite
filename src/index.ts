@@ -1,5 +1,5 @@
-import type { PromiseType } from '@hairy/utils'
-import type { Nitro, NitroDevServer } from 'nitropack'
+import type { Fn, PromiseType } from '@hairy/utils'
+import type { LoadConfigOptions, Nitro, NitroDevServer } from 'nitropack'
 import type { PresetNameInput } from 'nitropack/presets'
 import type { UnimportPluginOptions } from 'unimport/unplugin'
 import type { PluginOption } from 'vite'
@@ -66,9 +66,8 @@ export default async function Nitro(options: NitroOptions = {}): Promise<PluginO
         c12: {
           async onUpdate({ getDiff, newConfig }) {
             const diff = getDiff()
-            if (diff.length === 0) {
+            if (diff.length === 0)
               return
-            }
             consola.info(`Nitro config updated:\n${diff.map(entry => `  ${entry.toString()}`).join('\n')}`)
             await (diff.every(e => hmrKeyRep.test(e.key)) ? nitro.updateConfig(newConfig.config || {}) : reloadNitro())
           },
@@ -76,8 +75,7 @@ export default async function Nitro(options: NitroOptions = {}): Promise<PluginO
       },
     )
 
-    // @ts-expect-error
-    nitro.hooks.hookOnce('restart', reloadNitro)
+    nitro.hooks.hookOnce('restart', reloadNitro as Fn)
     server = createDevServer(nitro)
     handlers = await scanHandlers(nitro)
     listener = toNodeListener(server.app)
@@ -99,10 +97,12 @@ export default async function Nitro(options: NitroOptions = {}): Promise<PluginO
             baseURL: '/',
           },
         ],
+        routeRules: {
+          '**/*': { static: true },
+        },
       },
       {
-        // @ts-expect-error
-        compatibilityDate: options.compatibilityDate,
+        compatibilityDate: options.compatibilityDate as LoadConfigOptions['compatibilityDate'],
       },
     )
     return nitro

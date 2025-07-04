@@ -11,6 +11,7 @@ export default antfu(
       'ts/no-redeclare': 'off',
       'ts/ban-ts-comment': 'off',
       'perfectionist/sort-imports': 'off',
+      'no-undef': 'off',
     },
   },
 )

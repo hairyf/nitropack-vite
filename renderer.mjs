@@ -1,2 +1,3 @@
-/* eslint-disable no-undef */
+import { defineEventHandler } from 'h3'
+
 export default defineEventHandler(() => $fetch('/'))

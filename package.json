@@ -20,6 +20,7 @@
   "sideEffects": false,
   "exports": {
     ".": "./dist/index.mjs",
+    "./renderer": "./renderer.mjs",
     "./plugin": "./dist/index.mjs",
     "./package.json": "./package.json"
   },

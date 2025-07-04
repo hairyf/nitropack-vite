@@ -97,9 +97,7 @@ export default async function Nitro(options: NitroOptions = {}): Promise<PluginO
             baseURL: '/',
           },
         ],
-        routeRules: {
-          '**/*': { static: true },
-        },
+        renderer: 'nitropack-vite/renderer',
       },
       {
         compatibilityDate: options.compatibilityDate as LoadConfigOptions['compatibilityDate'],

@@ -1,7 +1,7 @@
 {
   "name": "nitropack-vite",
   "type": "module",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "packageManager": "pnpm@10.6.2",
   "description": "A Vite plugin that seamlessly integrates Nitro for server-side rendering, API routes, and full-stack development in a single unified framework.",
   "author": "Hairyf <wwu710632@gmail.com>",

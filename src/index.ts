@@ -3,7 +3,6 @@ import type { LoadConfigOptions, Nitro, NitroDevServer } from 'nitropack'
 import type { PresetNameInput } from 'nitropack/presets'
 import type { UnimportPluginOptions } from 'unimport/unplugin'
 import type { PluginOption } from 'vite'
-import fs from 'node:fs/promises'
 import process from 'node:process'
 import { isArray, whenever } from '@hairy/utils'
 import { consola } from 'consola'
@@ -97,6 +96,7 @@ export default async function Nitro(options: NitroOptions = {}): Promise<PluginO
             baseURL: '/',
           },
         ],
+        renderer: 'nitropack-vite/renderer',
       },
       {
         compatibilityDate: options.compatibilityDate as LoadConfigOptions['compatibilityDate'],
@@ -139,14 +139,12 @@ export default async function Nitro(options: NitroOptions = {}): Promise<PluginO
           ? listener?.(req, res)
           : next())
       },
-      async buildEnd() {
+      async closeBundle() {
         await prepare(nitro)
         await copyPublicAssets(nitro)
         await prerender(nitro)
         await build(nitro)
         await nitro.close()
-        await fs.mkdir('.output/server/node_modules/vite/misc', { recursive: true })
-        await fs.writeFile('.output/server/node_modules/vite/misc/true.js', 'export default true')
       },
       resolveId(source) {
         if (source === 'virtual:$fetch')

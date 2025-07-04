@@ -12,6 +12,9 @@ import { build, copyPublicAssets, createDevServer, createNitro as createNitroIns
 import Unimport from 'unimport/unplugin'
 import { getMagicString } from 'unimport'
 import path from 'node:path'
+import { fileURLToPath } from 'node:url'
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 export interface NitroOptions {
   /**
@@ -90,6 +93,7 @@ export default async function Nitro(options: NitroOptions = {}): Promise<PluginO
         dev: false,
         minify: options.minify,
         preset: options.preset,
+        plugins: [path.resolve(__dirname, '../', 'renderer.ts')],
         publicAssets: [
           {
             dir: path.relative(srcDir, dist),

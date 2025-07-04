@@ -32,10 +32,13 @@ export interface NitroOptions {
   minify?: boolean
   preset?: PresetNameInput
   compatibilityDate?: string
+
+  clientDist?: string
 }
 const hmrKeyRep = /^runtimeConfig\.|routeRules\./
 
 export default async function Nitro(options: NitroOptions = {}): Promise<PluginOption[]> {
+  const dist = options.clientDist || `${process.cwd()}/dist`
   let loadedFetchID: string | undefined
   let handlers: PromiseType<ReturnType<typeof scanHandlers>> = []
   let listener: NodeListener | undefined
@@ -91,7 +94,7 @@ export default async function Nitro(options: NitroOptions = {}): Promise<PluginO
         preset: options.preset,
         publicAssets: [
           {
-            dir: `${process.cwd()}/.nitro/static`,
+            dir: dist,
             baseURL: '/',
           },
         ],
@@ -126,7 +129,7 @@ export default async function Nitro(options: NitroOptions = {}): Promise<PluginO
           : [config.server.watch.ignored, /\.nitro\/types\/tsconfig.json/].filter(Boolean)
 
         config.build ??= {}
-        config.build.outDir = `${process.cwd()}/.nitro/static`
+        config.build.outDir = dist
       },
       async configResolved() {
         nitro = process.env.NODE_ENV === 'development'

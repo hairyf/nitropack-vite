@@ -5,13 +5,14 @@ import type { UnimportPluginOptions } from 'unimport/unplugin'
 import type { PluginOption } from 'vite'
 import fs from 'node:fs/promises'
 import process from 'node:process'
-import { isArray } from '@hairy/utils'
+import { isArray, whenever } from '@hairy/utils'
 import { consola } from 'consola'
 import { toNodeListener } from 'h3'
 import type { NodeListener } from 'h3'
 import { build, copyPublicAssets, createDevServer, createNitro as createNitroInstance, prepare, prerender, scanHandlers } from 'nitropack'
 import Unimport from 'unimport/unplugin'
 import { getMagicString } from 'unimport'
+import path from 'node:path'
 
 export interface NitroOptions {
   /**
@@ -38,7 +39,7 @@ export interface NitroOptions {
 const hmrKeyRep = /^runtimeConfig\.|routeRules\./
 
 export default async function Nitro(options: NitroOptions = {}): Promise<PluginOption[]> {
-  const dist = options.clientDist || `${process.cwd()}/dist`
+  const srcDir = whenever(options.srcDir, path.resolve) || `${process.cwd()}/src`
   let loadedFetchID: string | undefined
   let handlers: PromiseType<ReturnType<typeof scanHandlers>> = []
   let listener: NodeListener | undefined
@@ -55,7 +56,7 @@ export default async function Nitro(options: NitroOptions = {}): Promise<PluginO
     }
     nitro = await createNitroInstance(
       {
-        srcDir: options.srcDir || './src',
+        srcDir,
         dev: true,
         preset: 'nitro-dev',
         _cli: { command: 'dev' },
@@ -85,16 +86,16 @@ export default async function Nitro(options: NitroOptions = {}): Promise<PluginO
     return nitro
   }
 
-  async function createNitro(): Promise<Nitro> {
+  async function createNitro(dist: string): Promise<Nitro> {
     const nitro = await createNitroInstance(
       {
-        srcDir: options.srcDir || './src',
+        srcDir,
         dev: false,
         minify: options.minify,
         preset: options.preset,
         publicAssets: [
           {
-            dir: dist,
+            dir: path.relative(srcDir, dist),
             baseURL: '/',
           },
         ],
@@ -129,17 +130,17 @@ export default async function Nitro(options: NitroOptions = {}): Promise<PluginO
           : [config.server.watch.ignored, /\.nitro\/types\/tsconfig.json/].filter(Boolean)
 
         config.build ??= {}
-        config.build.outDir = dist
+        config.build.outDir ??= whenever(options.clientDist, path.resolve) || `${process.cwd()}/dist`
       },
-      async configResolved() {
-        nitro = process.env.NODE_ENV === 'development'
-          ? await reloadNitro()
-          : await createNitro()
+      async configResolved(config) {
+        nitro = process.env.NODE_ENV === 'production'
+          ? await createNitro(path.resolve(config.build.outDir))
+          : await reloadNitro()
       },
-      async configureServer(viteServer) {
-        viteServer.middlewares.use(async (req, res, next) => {
-          filter(req.originalUrl || req.url || '') ? listener?.(req, res) : next()
-        })
+      async configureServer(server) {
+        server.middlewares.use(async (req, res, next) => filter(req.originalUrl || req.url || '')
+          ? listener?.(req, res)
+          : next())
       },
       async buildEnd() {
         await prepare(nitro)

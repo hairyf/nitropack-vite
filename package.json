@@ -20,7 +20,7 @@
   "sideEffects": false,
   "exports": {
     ".": "./dist/index.mjs",
-    "./renderer": "./renderer.ts",
+    "./renderer": "./renderer.mjs",
     "./plugin": "./dist/index.mjs",
     "./package.json": "./package.json"
   },
@@ -29,7 +29,7 @@
   "types": "./dist/index.d.mts",
   "files": [
     "dist",
-    "renderer.ts"
+    "renderer.mjs"
   ],
   "scripts": {
     "build": "unbuild",

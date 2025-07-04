@@ -13,6 +13,7 @@ import Unimport from 'unimport/unplugin'
 import { getMagicString } from 'unimport'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
+import fs from 'node:fs/promises'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
@@ -40,8 +41,16 @@ export interface NitroOptions {
 }
 const hmrKeyRep = /^runtimeConfig\.|routeRules\./
 
+async function generateRenderer(html: string): Promise<void> {
+  const renderer = `import { defineEventHandler } from 'h3';
+export default defineEventHandler(async (event) => {
+  return \`${html}\`
+})`
+  await fs.writeFile(path.join(__dirname, '../', 'renderer.mjs'), renderer)
+}
 export default async function Nitro(options: NitroOptions = {}): Promise<PluginOption[]> {
   const srcDir = whenever(options.srcDir, path.resolve) || `${process.cwd()}/src`
+  const outDir = whenever(options.clientDist, path.resolve) || `${process.cwd()}/dist`
   let loadedFetchID: string | undefined
   let handlers: PromiseType<ReturnType<typeof scanHandlers>> = []
   let listener: NodeListener | undefined
@@ -87,25 +96,27 @@ export default async function Nitro(options: NitroOptions = {}): Promise<PluginO
   }
 
   async function createNitro(dist: string): Promise<Nitro> {
+    await generateRenderer(await fs.readFile(path.join(dist, 'index.html'), 'utf-8'))
+
     const nitro = await createNitroInstance(
       {
         srcDir,
         dev: false,
         minify: options.minify,
         preset: options.preset,
-        plugins: [path.resolve(__dirname, '../', 'renderer.ts')],
         publicAssets: [
           {
             dir: path.relative(srcDir, dist),
             baseURL: '/',
           },
         ],
-        renderer: 'nitropack-vite/renderer',
+        renderer: `nitropack-vite/renderer`,
       },
       {
         compatibilityDate: options.compatibilityDate as LoadConfigOptions['compatibilityDate'],
       },
     )
+
     return nitro
   }
 
@@ -131,12 +142,11 @@ export default async function Nitro(options: NitroOptions = {}): Promise<PluginO
           : [config.server.watch.ignored, /\.nitro\/types\/tsconfig.json/].filter(Boolean)
 
         config.build ??= {}
-        config.build.outDir ??= whenever(options.clientDist, path.resolve) || `${process.cwd()}/dist`
+        config.build.outDir ??= outDir
       },
-      async configResolved(config) {
-        nitro = process.env.NODE_ENV === 'production'
-          ? await createNitro(path.resolve(config.build.outDir))
-          : await reloadNitro()
+      async configResolved() {
+        if (process.env.NODE_ENV === 'development')
+          await reloadNitro()
       },
       async configureServer(server) {
         server.middlewares.use(async (req, res, next) => filter(req.originalUrl || req.url || '')
@@ -144,6 +154,7 @@ export default async function Nitro(options: NitroOptions = {}): Promise<PluginO
           : next())
       },
       async closeBundle() {
+        nitro = await createNitro(outDir)
         await prepare(nitro)
         await copyPublicAssets(nitro)
         await prerender(nitro)
